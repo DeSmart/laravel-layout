@@ -13,33 +13,27 @@ class Controller extends BaseController {
   protected $container;
 
   /**
-   * @var Router
-   */
-  protected $router;
-
-  /**
    * Layout structure
    *
    * @var array
    */
   protected $structure = array();
 
-  public function __construct(Container $container, Router $router) {
+  public function __construct(Container $container) {
     $this->container = $container;
-    $this->router = $router;
   }
 
-	/**
-	 * Setup the layout used by the controller.
-	 *
-	 * @return void
-	 */
-	protected function setupLayout() {
+  /**
+   * Setup the layout used by the controller.
+   *
+   * @return void
+   */
+  protected function setupLayout() {
 
     if (null !== $this->layout) {
-			$this->layout = \View::make($this->layout);
-		}
-	}
+      $this->layout = \View::make($this->layout);
+    }
+  }
 
   public function dispatch() {
 
