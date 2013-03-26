@@ -1,4 +1,4 @@
-Make your controller to manage site structure.
+Controller which defines page structure.
 
 # Installation
 Add `desmart\laravel-layout` as a requirement to composer.json:
@@ -34,7 +34,21 @@ class HomeController extends \DeSmart\Layout\Controller {
     ),
   );
   
+  /**
+   * Just show main page
+   */
   public function show() {
+    return $this->dispatch();
+  }
+
+  /**
+   * Show products in main block
+   */
+  public function showTopProducts() {
+    $this->structure['main'] = array(
+      'App\Products@showTopProducts',
+    );
+
     return $this->dispatch();
   }
 
@@ -43,7 +57,7 @@ class HomeController extends \DeSmart\Layout\Controller {
 
 *app/views/homepage.blade.php*:
 
-```
+```html
 <html>
 <head></head>
 <body>
@@ -60,16 +74,20 @@ class HomeController extends \DeSmart\Layout\Controller {
 *app/routes.php*:
 
 ```php
+<?php
+Route::get('/products', 'HomeController@showTopProducts');
 Route::get('/', 'HomeController@show');
 ```
 
 # Limits
 
-Methods declared in `$structure` can't accept arguments from route parameters. 
-It can be done with: `\Route::getCurrentRoute()->getParametersWithoutDefaults()`.
+* Methods declared in `$structure` can't accept arguments from route parameters. 
+  It can be done with: `\Route::getCurrentRoute()->getParametersWithoutDefaults()`.
+* Probably it's possible to pass method from controller in `$structure` but it won't work fully as expected (no controller magic (like filters etc) will happen)
 
 # Warning
 
-This package is provided *as is*. For know there're no tests because concept of this package may change during development.
+This package is provided *as is*. For now it's only a concept and the whole idea can change. 
+Also there're no unit tests.
 
 Just treat it as early alpha version.
