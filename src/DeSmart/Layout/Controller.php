@@ -59,12 +59,12 @@ class Controller extends BaseController {
 
     $output = $this->app['layout']->dispatch($callbackString, $args);
 
-    if(null !== $profiler) {
-      $profiler->endTimer($callbackString);
+    if(true === $output instanceof Renderable) {
+      $output = $output->render();
     }
 
-    if(true === $output instanceof Renderable) {
-      return $output->render();
+    if(null !== $profiler) {
+      $profiler->endTimer($callbackString);
     }
 
     return $output;
