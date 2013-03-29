@@ -1,7 +1,7 @@
 <?php namespace DeSmart\Layout;
 
 use Controller as BaseController;
-use Illuminate\Foundation\Application as Container;
+use Illuminate\Container\Container;
 use Illuminate\Support\Contracts\RenderableInterface as Renderable;
 use Illuminate\Routing\Router;
 
@@ -18,10 +18,6 @@ class Controller extends BaseController {
    * @var array
    */
   protected $structure = array();
-
-  public function __construct(Container $container) {
-    $this->container = $container;
-  }
 
   /**
    * Setup the layout used by the controller.
@@ -47,13 +43,29 @@ class Controller extends BaseController {
 
   private function callCallback($callbackString) {
     $callback = $this->makeCallback($callbackString);
+    $profiler = isset($this->container['profiler']) ? $this->container['profiler'] : null;
+
+    if(null !== $profiler) {
+      $profiler->startTimer($callbackString);
+    }
+
     $output = call_user_func($callback);
+
+    if(null !== $profiler) {
+      $profiler->endTimer($callbackString);
+    }
 
     if(true === $output instanceof Renderable) {
       return $output->render();
     }
 
     return $output;
+  }
+
+  public function callAction(Container $container, Router $router, $method, $parameters) {
+    $this->container = $container;
+
+    return parent::callAction($container, $router, $method, $parameters);
   }
 
   private function makeCallback($callbackString) {
