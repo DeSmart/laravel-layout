@@ -13,7 +13,9 @@ Add `desmart\laravel-layout` as a requirement to composer.json:
 
 Update your packages with `composer update` or install with `composer install`.
 
-In `app/config/app.php` add `'DeSmart\Layout\LayoutServiceProvider',` to providers and `'Layout'          => 'DeSmart\Layout\Facades\Layout',` to aliases.
+In *app/config/app.php* add:
+* `'DeSmart\Layout\LayoutServiceProvider',` to providers 
+* `'Layout'          => 'DeSmart\Layout\Facades\Layout',` to aliases.
 
 # Example
 
@@ -40,7 +42,7 @@ class HomeController extends \DeSmart\Layout\Controller {
    * Just show main page
    */
   public function show() {
-    return $this->dispatch();
+    return $this->execute();
   }
 
   /**
@@ -51,7 +53,7 @@ class HomeController extends \DeSmart\Layout\Controller {
       'App\Products@showTopProducts',
     );
 
-    return $this->dispatch();
+    return $this->execute();
   }
 
 }
@@ -81,10 +83,31 @@ Route::get('/products', 'HomeController@showTopProducts');
 Route::get('/', 'HomeController@show');
 ```
 
+# Layout facade
+
+This package provides `Layout` facade with method `dispatch`. 
+It can be used to execute controller action directly in template.
+
+```php
+<header>{{ Layout::dispatch('HomeController@head') }}</header>
+```
+
+dispatch() can take array argument with named callback arguments:
+
+```php
+class FancyController {
+
+  public function test($name, $title = 'sir. ') {}
+  
+}
+
+<header> {{ Layout::dispatch('FancyController@test', array('name' => 'Hans')) }} </header>
+```
+
+Notice, that it takes care with default arguments.
+
 # Limits
 
-* Methods declared in `$structure` can't accept arguments from route parameters. 
-  It can be done with: `\Route::getCurrentRoute()->getParametersWithoutDefaults()`.
 * Probably it's possible to pass method from controller in `$structure` but it won't work fully as expected (no controller magic (like filters etc) will happen)
 
 # Warning
