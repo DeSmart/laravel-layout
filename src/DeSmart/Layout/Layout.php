@@ -17,13 +17,19 @@ class Layout {
    * @param array|null $args named method arguments
    * @return mixed content returned by method
    * @throws \RuntimeException when insufficient number of arguments was passed
-   * @thorws \InvalidArgumentException when controller name is in wrong format
    */
   public function dispatch($controller, array $args = null) {
-    list($class, $method) = explode('@', $controller);
 
-    if(true === empty($class) || true === empty($method)) {
-      throw new \InvalidArgumentException('Invalid controller format');
+    if(false === strstr($controller, '@')) {
+      $class = $controller;
+    }
+    else {
+      list($class, $method) = explode('@', $controller);
+    }
+
+    // default method
+    if(true === empty($method)) {
+      $method = 'execute';
     }
 
     $object = $this->container->make($class);

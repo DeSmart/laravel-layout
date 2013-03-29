@@ -32,13 +32,6 @@ class LayoutTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals($expected, $layout->dispatch('\DeSmartTests\Layout\Layout\TestController@person', $args));
   }
 
-  public function testIfDispatchThrowsExceptionOnWrongControllerFormat() {
-    $layout = new Layout(new Container());
-
-    $this->setExpectedException('\InvalidArgumentException');
-    $layout->dispatch('Class::foo');
-  }
-
   public function testIfDispatchThrowsExceptionOnMissingArguments() {
     $layout = new Layout(new Container());
 
@@ -50,6 +43,12 @@ class LayoutTest extends \PHPUnit_Framework_TestCase {
     $layout = new Layout(new Container());
 
     $this->assertTrue($layout->dispatch('\DeSmartTests\Layout\Layout\TestController@emptyPerson'));
+  }
+
+  public function testIfDefaultMethodIsCalled() {
+    $layout = new Layout(new Container());
+
+    $this->assertTrue($layout->dispatch('\DeSmartTests\Layout\Layout\TestController'));
   }
 
 }

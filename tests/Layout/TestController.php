@@ -10,4 +10,8 @@ class TestController {
     return true;
   }
 
+  public function execute() {
+    return true;
+  }
+
 }
