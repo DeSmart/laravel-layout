@@ -31,6 +31,10 @@ class Controller extends BaseController {
     }
   }
 
+  protected function changeLayout($layout) {
+    $this->layout = \View::make($layout);
+  }
+
   public function execute(array $args = null) {
     $self = $this;
 
