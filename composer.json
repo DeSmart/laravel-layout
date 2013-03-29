@@ -16,5 +16,8 @@
             "DeSmart\\Layout": "src/"
         }
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "require-dev": {
+        "illuminate/container": "4.0.x"
+    }
 }

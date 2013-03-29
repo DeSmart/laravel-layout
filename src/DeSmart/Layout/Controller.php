@@ -31,25 +31,33 @@ class Controller extends BaseController {
     }
   }
 
-  public function dispatch() {
+  public function execute(array $args = null) {
+    $self = $this;
+
+    if(null === $args) {
+      $args = $this->app['router']->getCurrentRoute()->getParametersWithoutDefaults();
+    }
+
+    $mapper = function($callbackString) use ($args, $self) {
+      return $self->callCallback($callbackString, $args);
+    };
 
     foreach($this->structure as $block => $callback_list) {
-      $mapped = array_map(array($this, 'callCallback'), $callback_list);
+      $mapped = array_map($mapper, $callback_list);
       $this->layout[$block] = join("\n", $mapped);
     }
 
     return $this->layout;
   }
 
-  private function callCallback($callbackString) {
-    $callback = $this->makeCallback($callbackString);
-    $profiler = isset($this->container['profiler']) ? $this->container['profiler'] : null;
+  public final function callCallback($callbackString, array $args = null) {
+    $profiler = isset($this->app['profiler']) ? $this->app['profiler'] : null;
 
     if(null !== $profiler) {
       $profiler->startTimer($callbackString);
     }
 
-    $output = call_user_func($callback);
+    $output = $this->app['layout']->dispatch($callbackString, $args);
 
     if(null !== $profiler) {
       $profiler->endTimer($callbackString);
@@ -62,15 +70,9 @@ class Controller extends BaseController {
     return $output;
   }
 
-  public function callAction(Container $container, Router $router, $method, $parameters) {
-    $this->container = $container;
+  public function callAction(Container $app, Router $router, $method, $parameters) {
+    $this->app = $app;
 
-    return parent::callAction($container, $router, $method, $parameters);
-  }
-
-  private function makeCallback($callbackString) {
-    list($class, $method) = explode('@', $callbackString);
-
-    return array($this->container->make($class), $method);
+    return parent::callAction($app, $router, $method, $parameters);
   }
 }
