@@ -13,6 +13,8 @@ Add `desmart\laravel-layout` as a requirement to composer.json:
 
 Update your packages with `composer update` or install with `composer install`.
 
+In `app/config/app.php` add `'DeSmart\Layout\LayoutServiceProvider',` to providers and `'Layout'          => 'DeSmart\Layout\Facades\Layout',` to aliases.
+
 # Example
 
 *app/controllers/HomeController.php*:
