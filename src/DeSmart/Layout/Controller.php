@@ -46,9 +46,17 @@ class Controller extends BaseController {
       return $self->callCallback($callbackString, $args);
     };
 
-    foreach($this->structure as $block => $callback_list) {
-      $mapped = array_map($mapper, $callback_list);
-      $this->layout[$block] = join("\n", $mapped);
+    try {
+
+      foreach($this->structure as $block => $callback_list) {
+        $mapped = array_map($mapper, $callback_list);
+        $this->layout[$block] = join("\n", $mapped);
+      }
+    }
+    // our fancy redirect exception was thrown
+    // do the redirect!
+    catch (Redirect $e) {
+      return $e->createRedirect();
     }
 
     return $this->layout;
