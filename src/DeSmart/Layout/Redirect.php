@@ -17,17 +17,17 @@ class Redirect extends \Exception {
     $this->factory = $factory;
   }
 
-  public static function to($path) {
-    $factory = function() use ($path) {
-      return \Redirect::to($path);
+  public static function to($path, $status = 302, $headers = array(), $secure = null) {
+    $factory = function() use ($path, $status, $headers, $secure) {
+      return \Redirect::to($path, $status, $headers, $secure);
     };
 
     throw new static($factory);
   }
 
-  public static function route($path) {
-    $factory = function() use ($path) {
-      return \Redirect::route($path);
+  public static function route($route, $parameters = array(), $status = 302, $headers = array()) {
+    $factory = function() use ($route, $parameters, $status, $headers) {
+      return \Redirect::route($route, $parameters, $status, $headers);
     };
 
     throw new static($factory);
