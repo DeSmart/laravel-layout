@@ -1,5 +1,3 @@
-Controller which defines page structure.
-
 # Installation
 Add `desmart\laravel-layout` as a requirement to composer.json:
 
@@ -17,82 +15,88 @@ In *app/config/app.php* add:
 * `'DeSmart\Layout\LayoutServiceProvider',` to providers 
 * `'Layout'          => 'DeSmart\Layout\Facades\Layout',` to aliases.
 
-# Example
+# Overview
 
-*app/controllers/HomeController.php*:
+This package provides `DeSmart\Layout\Controller` class which works like normal page controller.  
+However it can be used to describe complete page structure.
 
+To do this simply define `$layout` which is basic page template, and `$structure` which is an array with section block definition. 
+
+Section block is a list of callbacks (let's call them *actions*) which will be run and put in a defined place in template.
+
+## Sample page template
+```html
+<!DOCTYPE html>
+<html>
+  <head></head>
+  <body>
+    <div class="container">
+      <div class="main">{{ $main }}</div>
+      <div class="right">{{ $right }}</div>
+    </div>
+  </body>
+</html>
+```
+
+## Sample controller
 ```php
 <?php
-class HomeController extends \DeSmart\Layout\Controller {
+class SampleController extends \DeSmart\Layout\Controller {
 
-  protected $layout = 'homepage';
+  protected $layout = 'layouts.default';
   
   protected $structure = array(
-    'left' => array(
-      'App\Menu@showMainCategories',
-      'App\Facebook@showLikeBox',
-    ),
-    
     'main' => array(
-      'App\Banners@showHomeBanner'
+      'FancyBanner@show',
+      'TopStories@show',
+    ),
+    'right' => array(
+      'Menu@showTopProducts',
     ),
   );
   
-  /**
-   * Just show main page
-   */
-  public function show() {
+  public function showProducts() {
+    $this->structure['main'] = array(
+      'Products@showAll',
+    );
+    
     return $this->execute();
   }
-
-  /**
-   * Show products in main block
-   */
-  public function showTopProducts() {
+  
+  public function showOne() {
+    $this->changeLayout('layouts.product');
     $this->structure['main'] = array(
-      'App\Products@showTopProducts',
+      'Products@showOne',
     );
-
+    
     return $this->execute();
   }
 
 }
 ```
 
-*app/views/homepage.blade.php*:
-
-```html
-<html>
-<head></head>
-<body>
-  <div class="left" id="menu">
-    {{ $left }}
-  </div>
-  <div id="main">
-    {{ $main }}
-  </div>
-</body>
-</html>
-```
-
-*app/routes.php*:
-
+## Sample route
 ```php
 <?php
-Route::get('/products', 'HomeController@showTopProducts');
-Route::get('/', 'HomeController@show');
+Route::get('/', 'SampleController@execute');
+Route::get('/products', 'SampleController@showProducts');
+Route::get('/products/{product_id}', 'SampleController@showOne');
 ```
+
+## Actions
+Each action is a callback string which will be called during `DeSmart\Layout\Controller@execute` call.  
+Every action can get params defined in route, just define them as function arguments (`public function showOne($product_id) {}`).
 
 # Layout facade
 
 This package provides `Layout` facade with method `dispatch`. 
-It can be used to execute controller action directly in template.
+It can be used to execute action directly in template.
 
 ```php
 <header>{{ Layout::dispatch('HomeController@head') }}</header>
 ```
 
-dispatch() can take array argument with named callback arguments:
+`dispatch()` can take array argument with named callback arguments:
 
 ```php
 class FancyController {
@@ -106,9 +110,25 @@ class FancyController {
 
 Notice, that it takes care with default arguments.
 
-# Limits
+# Redirects
 
-* Probably it's possible to pass method from controller in `$structure` but it won't work fully as expected (no controller magic (like filters etc) will happen)
+Since everything is done inside `DeSmart\Layout\Controller` it's not recommended for action to return a `RedirectResponse`.  
+When `RedirectResponse` will be returned whole page will be displayed and after a while redirect will be fired.
+
+To avoid this use `DeSmart\Layout\Redirect` exception (yes, exception) to do redirects.
+
+Simply, use `DeSmart\Layout\Redirect::to()`, or `DeSmart\Layout\Redirect::route()` inside action to do redirect. This methods are compatible with `Redirect::to()`, and `Redirect::route()`.
+
+```php
+public function showOne() {
+
+  // ....
+  if( $fail )
+  {
+    DeSmart\Layout\Redirect::to('/');
+  }
+}
+```
 
 # Warning
 
