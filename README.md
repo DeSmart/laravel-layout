@@ -115,9 +115,7 @@ Notice, that it takes care with default arguments.
 Since everything is done inside `DeSmart\Layout\Controller` it's not recommended for action to return a `RedirectResponse`.  
 When `RedirectResponse` will be returned whole page will be displayed and after a while redirect will be fired.
 
-To avoid this use `DeSmart\Layout\Redirect` exception (yes, exception) to do redirects.
-
-Simply, use `DeSmart\Layout\Redirect::to()`, or `DeSmart\Layout\Redirect::route()` inside action to do redirect. This methods are compatible with `Redirect::to()`, and `Redirect::route()`.
+It's recommended to use [desmart/response-exception](https://github.com/DeSmart/response-exception) for sending redirect response's.
 
 ```php
 public function showOne() {
