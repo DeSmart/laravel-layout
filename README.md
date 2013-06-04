@@ -117,17 +117,6 @@ When `RedirectResponse` will be returned whole page will be displayed and after 
 
 It's recommended to use [desmart/response-exception](https://github.com/DeSmart/response-exception) for sending redirect response's.
 
-```php
-public function showOne() {
-
-  // ....
-  if( $fail )
-  {
-    DeSmart\Layout\Redirect::to('/');
-  }
-}
-```
-
 # Warning
 
 This package is provided *as is*. For now it's only a concept and the whole idea can change. 
