@@ -4,7 +4,7 @@ Add `desmart\laravel-layout` as a requirement to composer.json:
 ```json
 {
   "require": {
-    "desmart/laravel-layout": "dev-master"
+    "desmart/laravel-layout": "1.0.*"
   }
 }
 ```
