@@ -1,6 +1,6 @@
-<?php namespace DeSmartTests\Layout\Layout;
+<?php
 
-class TestController {
+class DeSmartLayoutStubsDispatchStub {
 
   public function person($name, $age, $title = 'sir') {
     return compact('name', 'age', 'title');

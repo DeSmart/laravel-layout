@@ -1,9 +1,13 @@
-<?php namespace DeSmartTests\Layout;
+<?php
 
 use DeSmart\Layout\Layout;
 use Illuminate\Container\Container;
 
-class LayoutTest extends \PHPUnit_Framework_TestCase {
+class DeSmartLayoutLayoutTest extends PHPUnit_Framework_TestCase {
+
+  public function setUp() {
+    require_once __DIR__.'/stubs/DispatchStub.php';
+  }
 
   public function testDispatchWithFullArguments() {
     $layout = new Layout(new Container());
@@ -13,7 +17,7 @@ class LayoutTest extends \PHPUnit_Framework_TestCase {
       'age' => 43,
     );
 
-    $this->assertEquals($args, $layout->dispatch('\DeSmartTests\Layout\Layout\TestController@person', $args));
+    $this->assertEquals($args, $layout->dispatch('DeSmartLayoutStubsDispatchStub@person', $args));
   }
 
   public function testDispatchWithRequiredArguments() {
@@ -29,26 +33,26 @@ class LayoutTest extends \PHPUnit_Framework_TestCase {
       'title' => 'sir',
     );
 
-    $this->assertEquals($expected, $layout->dispatch('\DeSmartTests\Layout\Layout\TestController@person', $args));
+    $this->assertEquals($expected, $layout->dispatch('DeSmartLayoutStubsDispatchStub@person', $args));
   }
 
   public function testIfDispatchThrowsExceptionOnMissingArguments() {
     $layout = new Layout(new Container());
 
     $this->setExpectedException('\RuntimeException');
-    $layout->dispatch('\DeSmartTests\Layout\Layout\TestController@person', array('name' => 'Hans'));
+    $layout->dispatch('DeSmartLayoutStubsDispatchStub@person', array('name' => 'Hans'));
   }
 
   public function testDispatchWithNoneArguments() {
     $layout = new Layout(new Container());
 
-    $this->assertTrue($layout->dispatch('\DeSmartTests\Layout\Layout\TestController@emptyPerson'));
+    $this->assertTrue($layout->dispatch('DeSmartLayoutStubsDispatchStub@emptyPerson'));
   }
 
   public function testIfDefaultMethodIsCalled() {
     $layout = new Layout(new Container());
 
-    $this->assertTrue($layout->dispatch('\DeSmartTests\Layout\Layout\TestController'));
+    $this->assertTrue($layout->dispatch('DeSmartLayoutStubsDispatchStub'));
   }
 
 }
