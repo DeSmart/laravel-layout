@@ -29,12 +29,12 @@ class Controller extends LaravelController {
   protected function setupLayout() {
 
     if (null !== $this->layout) {
-      $this->layout = \View::make($this->layout);
+      $this->changeLayout($this->layout);
     }
   }
 
   protected function changeLayout($layout) {
-    $this->layout = \View::make($layout);
+    $this->layout = $this->container['view']->make($layout);
   }
 
   public function execute(array $args = null) {
