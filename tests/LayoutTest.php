@@ -5,7 +5,7 @@ use Illuminate\Container\Container;
 
 class DeSmartLayoutLayoutTest extends PHPUnit_Framework_TestCase {
 
-  public function setUp() {
+  public static function setUpBeforeClass() {
     require_once __DIR__.'/stubs/DispatchStub.php';
   }
 
