@@ -2,6 +2,7 @@
 
 use Illuminate\Routing\Router;
 use Illuminate\Container\Container;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Illuminate\Routing\Controllers\Controller as LaravelController;
 use Illuminate\Support\Contracts\RenderableInterface as Renderable;
 
@@ -38,42 +39,61 @@ class Controller extends LaravelController {
   }
 
   public function execute(array $args = null) {
-    $self = $this;
 
     if(null === $args) {
       $args = $this->container['router']->getCurrentRoute()->getParametersWithoutDefaults();
     }
 
-    $mapper = function($callbackString) use ($args, $self) {
-      return $self->callCallback($callbackString, $args);
-    };
-
     foreach($this->structure as $block => $callback_list) {
-      $mapped = array_map($mapper, $callback_list);
-      $this->layout[$block] = join("\n", $mapped);
+      $blocks = array();
+
+      foreach($callback_list as $callback) {
+        $response = $this->handleResponse($this->callCallback($callback, $args));
+
+        if(true === $response instanceof RedirectResponse) {
+          return $response;
+        }
+
+        $blocks[] = $response;
+      }
+
+      $this->layout[$block] = join("\n", $blocks);
     }
 
     return $this->layout;
   }
 
-  public final function callCallback($callbackString, array $args = null) {
+  protected function handleResponse($response) {
+
+    if(true === $response instanceof Renderable) {
+      $response = $response->render();
+    }
+
+    return $response;
+  }
+
+  /**
+   * Call given callback
+   *
+   * @see \DeSmart\Layout\Layout::dispatch()
+   * @param string $string
+   * @param array  $args
+   * @return mixed
+   */
+  protected final function callCallback($string, array $args = null) {
     $profiler = isset($this->container['profiler']) ? $this->container['profiler'] : null;
 
     if(null !== $profiler) {
-      $profiler->startTimer($callbackString);
+      $profiler->startTimer($string);
     }
 
-    $output = $this->container['layout']->dispatch($callbackString, $args);
-
-    if(true === $output instanceof Renderable) {
-      $output = $output->render();
-    }
+    $response = $this->container['layout']->dispatch($string, $args);
 
     if(null !== $profiler) {
-      $profiler->endTimer($callbackString);
+      $profiler->endTimer($string);
     }
 
-    return $output;
+    return $response;
   }
 
   public function callAction(Container $app, Router $router, $method, $parameters) {

@@ -115,6 +115,24 @@ class DeSmartLayoutControllerTest extends PHPUnit_Framework_TestCase {
     $controller->execute();
   }
 
+  public function testIfRedirectResponseIsReturnedDirectly() {
+    $c = new Container;
+    $router = $this->routerFactory($args = array('foo', 'bar'));
+    $view = m::mock('Illuminate\View\View');
+    $redirect_response = m::mock('Symfony\Component\HttpFoundation\RedirectResponse');
+    $layout = m::mock('DeSmart\Layout\Layout');
+    $layout->shouldReceive('dispatch')->once()->with('Top\Render', $args)->andReturn($redirect_response);
+
+    $c['view'] = $view;
+    $c['layout'] = $layout;
+    $c['router'] = $router;
+
+    $controller = new Controller;
+    $controller->setContainer($c);
+
+    $this->assertEquals($redirect_response, $controller->showOne('Top\Render'));
+  }
+
   private function routerFactory($args) {
     $router = m::mock('Illuminate\Routing\Router');
     $router->shouldReceive('getCurrentRoute')->once()->andReturn($router);

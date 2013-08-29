@@ -24,6 +24,7 @@
         "illuminate/routing": "4.0.x",
         "illuminate/container": "4.0.x",
         "illuminate/view": "4.0.x",
+        "illuminate/http": "4.0.x",
         "mockery/mockery": "0.8.*"
     }
 }
