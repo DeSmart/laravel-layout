@@ -18,7 +18,9 @@ class DeSmartLayoutControllerTest extends PHPUnit_Framework_TestCase {
     $c = new Container;
     $router = $this->routerFactory($args = array('foo', 'bar'));
     $view = m::mock('Illuminate\View\View');
-    $view->shouldReceive('make')->once()->with('test')->andReturn(array());
+    $view->shouldReceive('make')->once()->with('test')->andReturn($view);
+    $view->shouldReceive('with')->once()->with('top', "first\nsecond");
+    $view->shouldReceive('with')->once()->with('bottom', "bottom first");
     $layout = m::mock('DeSmart\Layout\Layout');
     $layout->shouldReceive('dispatch')->once()->with('Top\First', $args)->andReturn('first');
     $layout->shouldReceive('dispatch')->once()->with('Top\Second', $args)->andReturn('second');
@@ -28,25 +30,21 @@ class DeSmartLayoutControllerTest extends PHPUnit_Framework_TestCase {
     $c['layout'] = $layout;
     $c['router'] = $router;
 
-    $expected = array(
-      'top' => "first\nsecond",
-      'bottom' => 'bottom first',
-    );
-
     $controller = new Controller;
     $controller->setContainer($c);
 
     // create layout instance manually, normally callAction() is responsible for this
     $controller->setupLayout();
-
-    $this->assertEquals($expected, $controller->execute());
+    $controller->execute();
   }
 
   public function testExecuteProcessWithPassedArguments() {
     $c = new Container;
     $args = array('foo', 'bar');
     $view = m::mock('Illuminate\View\View');
-    $view->shouldReceive('make')->once()->with('test')->andReturn(array());
+    $view->shouldReceive('make')->once()->with('test')->andReturn($view);
+    $view->shouldReceive('with')->once()->with('top', "first\nsecond");
+    $view->shouldReceive('with')->once()->with('bottom', "bottom first");
     $layout = m::mock('DeSmart\Layout\Layout');
     $layout->shouldReceive('dispatch')->once()->with('Top\First', $args)->andReturn('first');
     $layout->shouldReceive('dispatch')->once()->with('Top\Second', $args)->andReturn('second');
@@ -55,26 +53,22 @@ class DeSmartLayoutControllerTest extends PHPUnit_Framework_TestCase {
     $c['view'] = $view;
     $c['layout'] = $layout;
 
-    $expected = array(
-      'top' => "first\nsecond",
-      'bottom' => 'bottom first',
-    );
-
     $controller = new Controller;
     $controller->setContainer($c);
 
     // create layout instance manually, normally callAction() is responsible for this
     $controller->setupLayout();
-
-    $this->assertEquals($expected, $controller->execute($args));
+    $controller->execute($args);
   }
 
   public function testIfRenderableResponseIsRendered() {
     $c = new Container;
     $router = $this->routerFactory($args = array('foo', 'bar'));
     $view = m::mock('Illuminate\View\View');
+    $view->shouldReceive('make')->once()->with('test')->andReturn($view);
+    $view->shouldReceive('with')->once()->with('top', '');
     $renderable = m::mock('Illuminate\Support\Contracts\RenderableInterface');
-    $renderable->shouldReceive('render')->once();
+    $renderable->shouldReceive('render')->once()->andReturn('');
     $layout = m::mock('DeSmart\Layout\Layout');
     $layout->shouldReceive('dispatch')->once()->with('Top\Render', $args)->andReturn($renderable);
 
@@ -84,6 +78,7 @@ class DeSmartLayoutControllerTest extends PHPUnit_Framework_TestCase {
 
     $controller = new Controller;
     $controller->setContainer($c);
+    $controller->setupLayout();
 
     $controller->showOne('Top\Render');
   }
@@ -92,10 +87,13 @@ class DeSmartLayoutControllerTest extends PHPUnit_Framework_TestCase {
     $c = new Container;
     $router = $this->routerFactory($args = array('foo', 'bar'));
     $view = m::mock('Illuminate\View\View');
+    $view->shouldReceive('make')->once()->with('test')->andReturn($view);
+    $view->shouldReceive('with')->once()->with('top', "first\nsecond");
+    $view->shouldReceive('with')->once()->with('bottom', "bottom first");
     $layout = m::mock('DeSmart\Layout\Layout');
-    $layout->shouldReceive('dispatch')->once()->with('Top\First', $args);
-    $layout->shouldReceive('dispatch')->once()->with('Top\Second', $args);
-    $layout->shouldReceive('dispatch')->once()->with('Bottom\First', $args);
+    $layout->shouldReceive('dispatch')->once()->with('Top\First', $args)->andReturn('first');
+    $layout->shouldReceive('dispatch')->once()->with('Top\Second', $args)->andReturn('second');
+    $layout->shouldReceive('dispatch')->once()->with('Bottom\First', $args)->andReturn('bottom first');
     $profiler = m::mock('stdClass');
     $profiler->shouldReceive('startTimer')->once()->with('Top\First');
     $profiler->shouldReceive('endTimer')->once()->with('Top\First');
@@ -111,6 +109,7 @@ class DeSmartLayoutControllerTest extends PHPUnit_Framework_TestCase {
 
     $controller = new Controller;
     $controller->setContainer($c);
+    $controller->setupLayout();
 
     $controller->execute();
   }

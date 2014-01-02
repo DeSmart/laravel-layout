@@ -57,7 +57,7 @@ class Controller extends LaravelController {
         $blocks[] = $response;
       }
 
-      $this->layout[$block] = join("\n", $blocks);
+      $this->layout->with($block, join("\n", $blocks));
     }
 
     return $this->layout;
