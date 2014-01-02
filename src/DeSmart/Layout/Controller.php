@@ -35,10 +35,12 @@ class Controller extends LaravelController {
   }
 
   protected function changeLayout($layout) {
-    $this->layout = $this->container['view']->make($layout);
+    $this->layout = new LazyView($layout);
   }
 
   public function execute(array $args = null) {
+    $self = $this;
+    $this->layout->setEnvironment($this->container['view']);
 
     if(null === $args) {
       $args = $this->container['router']->getCurrentRoute()->getParametersWithoutDefaults();
@@ -72,28 +74,24 @@ class Controller extends LaravelController {
     return $response;
   }
 
-  /**
-   * Call given callback
-   *
-   * @see \DeSmart\Layout\Layout::dispatch()
-   * @param string $string
-   * @param array  $args
-   * @return mixed
-   */
-  protected final function callCallback($string, array $args = null) {
+  public final function callCallback($callbackString, array $args = null) {
     $profiler = isset($this->container['profiler']) ? $this->container['profiler'] : null;
 
     if(null !== $profiler) {
-      $profiler->startTimer($string);
+      $profiler->startTimer($callbackString);
     }
 
-    $response = $this->container['layout']->dispatch($string, $args);
+    $output = $this->container['layout']->dispatch($callbackString, $args);
+
+    if(true === $output instanceof Renderable) {
+      $output = $output->render();
+    }
 
     if(null !== $profiler) {
-      $profiler->endTimer($string);
+      $profiler->endTimer($callbackString);
     }
 
-    return $response;
+    return $output;
   }
 
   public function callAction(Container $app, Router $router, $method, $parameters) {
