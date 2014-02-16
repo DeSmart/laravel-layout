@@ -3,7 +3,7 @@
 use Illuminate\Routing\Router;
 use Illuminate\Container\Container;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Illuminate\Routing\Controllers\Controller as LaravelController;
+use Illuminate\Routing\Controller as LaravelController;
 use Illuminate\Support\Contracts\RenderableInterface as Renderable;
 
 class Controller extends LaravelController {
