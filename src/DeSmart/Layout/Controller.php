@@ -43,7 +43,7 @@ class Controller extends LaravelController {
     $this->layout->setEnvironment($this->container['view']);
 
     if(null === $args) {
-      $args = $this->container['router']->getCurrentRoute()->getParametersWithoutDefaults();
+      $args = $this->container['router']->getCurrentRoute()->parametersWithoutNulls();
     }
 
     foreach($this->structure as $block => $callback_list) {
@@ -94,11 +94,11 @@ class Controller extends LaravelController {
     return $output;
   }
 
-  public function callAction(Container $app, Router $router, $method, $parameters) {
+  public function callAction($method, $parameters) {
     // dirty way to assign application instance to controller
-    $this->setContainer($app);
+    $this->setContainer(\App::make('app'));
 
-    return parent::callAction($app, $router, $method, $parameters);
+    return parent::callAction($method, $parameters);
   }
 
   /**

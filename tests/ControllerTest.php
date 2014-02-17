@@ -141,7 +141,7 @@ class DeSmartLayoutControllerTest extends PHPUnit_Framework_TestCase {
   private function routerFactory($args) {
     $router = m::mock('Illuminate\Routing\Router');
     $router->shouldReceive('getCurrentRoute')->once()->andReturn($router);
-    $router->shouldReceive('getParametersWithoutDefaults')->once()->andReturn($args);
+    $router->shouldReceive('parametersWithoutNulls')->once()->andReturn($args);
 
     return $router;
   }
