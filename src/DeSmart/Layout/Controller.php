@@ -1,7 +1,6 @@
 <?php namespace DeSmart\Layout;
 
 use Illuminate\Routing\Router;
-use Illuminate\Container\Container;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Illuminate\Routing\Controller as LaravelController;
 use Illuminate\Support\Contracts\RenderableInterface as Renderable;
@@ -16,11 +15,19 @@ class Controller extends LaravelController {
   protected $structure = array();
 
   /**
-   * Application instance
-   *
-   * @var Illuminate\Container\Container
+   * @var \Illuminate\View\Environment
    */
-  protected $container;
+  protected $viewFactory;
+
+  /**
+   * @var \DeSmart\Layout\Layout
+   */
+  protected $layoutDispatcher;
+
+  /**
+   * @var \Illuminate\Routing\Router
+   */
+  protected $router;
 
   /**
    * Setup the layout used by the controller.
@@ -40,10 +47,10 @@ class Controller extends LaravelController {
 
   public function execute(array $args = null) {
     $self = $this;
-    $this->layout->setEnvironment($this->container['view']);
+    $this->layout->setEnvironment($this->viewFactory);
 
     if(null === $args) {
-      $args = $this->container['router']->getCurrentRoute()->parametersWithoutNulls();
+      $args = $this->router->getCurrentRoute()->parametersWithoutNulls();
     }
 
     foreach($this->structure as $block => $callback_list) {
@@ -75,39 +82,34 @@ class Controller extends LaravelController {
   }
 
   public final function callCallback($callbackString, array $args = null) {
-    $profiler = isset($this->container['profiler']) ? $this->container['profiler'] : null;
-
-    if(null !== $profiler) {
-      $profiler->startTimer($callbackString);
-    }
-
-    $output = $this->container['layout']->dispatch($callbackString, $args);
+    $output = $this->layoutDispatcher->dispatch($callbackString, $args);
 
     if(true === $output instanceof Renderable) {
       $output = $output->render();
     }
 
-    if(null !== $profiler) {
-      $profiler->endTimer($callbackString);
-    }
-
     return $output;
   }
 
-  public function callAction($method, $parameters) {
-    // dirty way to assign application instance to controller
-    $this->setContainer(\App::make('app'));
-
-    return parent::callAction($method, $parameters);
+  /**
+   * @param \DeSmart\Layout\Layout $dispatcher
+   */
+  public function setLayoutDispatcher(Layout $dispatcher) {
+    $this->layoutDispatcher = $dispatcher;
   }
 
   /**
-   * Set container instance
-   *
-   * @param \Illuminate\Container\Container $container
+   * @param \Illuminate\View\Factory $factory
    */
-  public function setContainer(Container $container) {
-    $this->container = $container;
+  public function setViewFactory(\Illuminate\View\Environment $factory) {
+    $this->viewFactory = $factory;
+  }
+
+  /**
+   * @param \Illuminate\Routing\Router
+   */
+  public function setRouter(Router $router) {
+    $this->router = $router;
   }
 
 }
