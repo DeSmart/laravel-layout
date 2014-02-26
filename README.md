@@ -110,13 +110,6 @@ class FancyController {
 
 Notice, that it takes care with default arguments.
 
-# Redirects
-
-Since everything is done inside `DeSmart\Layout\Controller` it's not recommended for action to return a `RedirectResponse`.  
-When `RedirectResponse` will be returned whole page will be displayed and after a while redirect will be fired.
-
-It's recommended to use [desmart/response-exception](https://github.com/DeSmart/response-exception) for sending redirect response's.
-
 # Warning
 
 This package is provided *as is*. For now it's only a concept and the whole idea can change. 
