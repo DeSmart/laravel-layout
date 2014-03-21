@@ -1,7 +1,7 @@
 <?php namespace DeSmart\Layout;
 
 use Illuminate\Routing\Router;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Routing\Controller as LaravelController;
 use Illuminate\Support\Contracts\RenderableInterface as Renderable;
 
@@ -59,7 +59,7 @@ class Controller extends LaravelController {
       foreach($callback_list as $callback) {
         $response = $this->handleResponse($this->callCallback($callback, $args));
 
-        if(true === $response instanceof RedirectResponse) {
+        if(true === $response instanceof Response) {
           return $response;
         }
 
