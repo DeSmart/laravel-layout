@@ -16,9 +16,6 @@
             "DeSmart\\Layout": "src/"
         }
     },
-    "suggest": {
-      "desmart/response-exception": "To do overwrite response from action"
-    },
     "minimum-stability": "dev",
     "require-dev": {
         "illuminate/routing": "4.1.x",
