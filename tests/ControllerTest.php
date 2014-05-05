@@ -2,12 +2,14 @@
 
 use Illuminate\Container\Container;
 use DeSmartLayoutStubsControllerStub as Controller;
+use DeSmartLayoutStubsControllerWithDataStub as ControllerWithData;
 use Mockery as m;
 
 class DeSmartLayoutControllerTest extends PHPUnit_Framework_TestCase {
 
   public static function setUpBeforeClass() {
     require_once __DIR__.'/stubs/ControllerStub.php';
+    require_once __DIR__.'/stubs/ControllerWithDataStub.php';
   }
 
   public function tearDown() {
@@ -36,6 +38,26 @@ class DeSmartLayoutControllerTest extends PHPUnit_Framework_TestCase {
 
     $this->assertInstanceOf('DeSmart\Layout\LazyView', $proxy);
     $proxy->render();
+  }
+
+  public function testExecuteProcessWhenControllerHasDataAttributeDefined() {
+    $router = $this->routerFactory($args = array('foo', 'bar'));
+    $view = m::mock('Illuminate\View\View');
+    $view->shouldReceive('render')->once();
+    $env = m::mock('Illuminate\View\Environment');
+    $env->shouldReceive('make')->once()->with('test', array('top' => 'first', 'main_class' => 'foo'))->andReturn($view);
+    $layout = m::mock('DeSmart\Layout\Layout');
+    $layout->shouldReceive('dispatch')->once()->with('Top\First', $args)->andReturn('first');
+
+    $controller = new ControllerWithData;
+
+    // create layout instance manually, normally callAction() is responsible for this
+    $controller->setupLayout();
+    $controller->setViewFactory($env);
+    $controller->setRouter($router);
+    $controller->setLayoutDispatcher($layout);
+    $controller->execute()
+      ->render();
   }
 
   public function testExecuteProcessWithPassedArguments() {

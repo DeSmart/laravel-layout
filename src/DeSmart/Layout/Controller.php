@@ -30,6 +30,13 @@ class Controller extends LaravelController {
   protected $router;
 
   /**
+   * Array of view data
+   *
+   * @var array
+   */
+  protected $data = array();
+
+  /**
    * Setup the layout used by the controller.
    *
    * @return void
@@ -68,6 +75,8 @@ class Controller extends LaravelController {
 
       $this->layout->with($block, join("\n", $blocks));
     }
+
+    $this->layout->with($this->data);
 
     return $this->layout;
   }
