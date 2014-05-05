@@ -1,3 +1,5 @@
+[![Build Status](https://api.travis-ci.org/DeSmart/laravel-layout.png)](https://travis-ci.org/DeSmart/laravel-layout)
+
 # Installation
 Add `desmart\laravel-layout` as a requirement to composer.json:
 
