@@ -29,7 +29,7 @@ class LazyView implements \ArrayAccess, Renderable {
     $this->environment = $environment;
   }
 
-  public function offsetExists($offset) {
+  public function offsetExists($key) {
     return array_key_exists($key, $this->data);
   }
 
