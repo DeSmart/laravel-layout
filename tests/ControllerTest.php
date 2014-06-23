@@ -12,6 +12,10 @@ class DeSmartLayoutControllerTest extends PHPUnit_Framework_TestCase {
     require_once __DIR__.'/stubs/ControllerWithDataStub.php';
   }
 
+  public function setUp() {
+    m::getConfiguration()->allowMockingNonExistentMethods(false);
+  }
+
   public function tearDown() {
     m::close();
   }
