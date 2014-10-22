@@ -42,7 +42,6 @@ class DeSmartLayoutLazyViewTest extends PHPUnit_Framework_TestCase {
     ));
 
     $view->setEnvironment($env = $this->viewFactory($name, $data));
-    $env->shouldReceive('render')->once();
 
     $view->render();
   }
@@ -54,8 +53,10 @@ class DeSmartLayoutLazyViewTest extends PHPUnit_Framework_TestCase {
   }
 
   protected function viewFactory($name, $data) {
-    $mock = m::mock('Illuminate\View\Environment');
-    $mock->shouldReceive('make')->once()->with($name, $data)->andReturn($mock);
+    $view = m::mock('Illuminate\View\View');
+    $view->shouldReceive('render')->once()->andReturn('');
+    $mock = m::mock('Illuminate\View\Factory');
+    $mock->shouldReceive('make')->once()->with($name, $data)->andReturn($view);
 
     return $mock;
   }
