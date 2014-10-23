@@ -12,6 +12,10 @@ class DeSmartLayoutControllerTest extends PHPUnit_Framework_TestCase {
     require_once __DIR__.'/stubs/ControllerWithDataStub.php';
   }
 
+  public function setUp() {
+    m::getConfiguration()->allowMockingNonExistentMethods(false);
+  }
+
   public function tearDown() {
     m::close();
   }
@@ -20,7 +24,7 @@ class DeSmartLayoutControllerTest extends PHPUnit_Framework_TestCase {
     $router = $this->routerFactory($args = array('foo', 'bar'));
     $view = m::mock('Illuminate\View\View');
     $view->shouldReceive('render')->once();
-    $env = m::mock('Illuminate\View\Environment');
+    $env = m::mock('Illuminate\View\Factory');
     $env->shouldReceive('make')->once()->with('test', array('top' => "first\nsecond", 'bottom' => "bottom first"))->andReturn($view);
     $layout = m::mock('DeSmart\Layout\Layout');
     $layout->shouldReceive('dispatch')->once()->with('Top\First', $args)->andReturn('first');
@@ -44,7 +48,7 @@ class DeSmartLayoutControllerTest extends PHPUnit_Framework_TestCase {
     $router = $this->routerFactory($args = array('foo', 'bar'));
     $view = m::mock('Illuminate\View\View');
     $view->shouldReceive('render')->once();
-    $env = m::mock('Illuminate\View\Environment');
+    $env = m::mock('Illuminate\View\Factory');
     $env->shouldReceive('make')->once()->with('test', array('top' => 'first', 'main_class' => 'foo'))->andReturn($view);
     $layout = m::mock('DeSmart\Layout\Layout');
     $layout->shouldReceive('dispatch')->once()->with('Top\First', $args)->andReturn('first');
@@ -64,7 +68,7 @@ class DeSmartLayoutControllerTest extends PHPUnit_Framework_TestCase {
     $args = array('foo', 'bar');
     $view = m::mock('Illuminate\View\View');
     $view->shouldReceive('render')->once();
-    $env = m::mock('Illuminate\View\Environment');
+    $env = m::mock('Illuminate\View\Factory');
     $env->shouldReceive('make')->once()->with('test', array('top' => "first\nsecond", 'bottom' => "bottom first"))->andReturn($view);
     $layout = m::mock('DeSmart\Layout\Layout');
     $layout->shouldReceive('dispatch')->once()->with('Top\First', $args)->andReturn('first');
@@ -84,7 +88,7 @@ class DeSmartLayoutControllerTest extends PHPUnit_Framework_TestCase {
     $router = $this->routerFactory($args = array('foo', 'bar'));
     $view = m::mock('Illuminate\View\View');
     $view->shouldReceive('render')->once();
-    $env = m::mock('Illuminate\View\Environment');
+    $env = m::mock('Illuminate\View\Factory');
     $env->shouldReceive('make')->once()->with('test', array('top' => ''))->andReturn($view);
     $renderable = m::mock('Illuminate\Support\Contracts\RenderableInterface');
     $renderable->shouldReceive('render')->once()->andReturn('');
@@ -102,7 +106,7 @@ class DeSmartLayoutControllerTest extends PHPUnit_Framework_TestCase {
 
   public function testIfRedirectResponseIsReturnedDirectly() {
     $router = $this->routerFactory($args = array('foo', 'bar'));
-    $env = m::mock('Illuminate\View\Environment');
+    $env = m::mock('Illuminate\View\Factory');
     $env->shouldReceive('make')->never();
     $redirect_response = m::mock('Symfony\Component\HttpFoundation\RedirectResponse');
     $layout = m::mock('DeSmart\Layout\Layout');
@@ -119,8 +123,9 @@ class DeSmartLayoutControllerTest extends PHPUnit_Framework_TestCase {
 
   private function routerFactory($args) {
     $router = m::mock('Illuminate\Routing\Router');
-    $router->shouldReceive('getCurrentRoute')->once()->andReturn($router);
-    $router->shouldReceive('parametersWithoutNulls')->once()->andReturn($args);
+    $route = m::mock('Illuminate\Routing\Route');
+    $router->shouldReceive('getCurrentRoute')->once()->andReturn($route);
+    $route->shouldReceive('parametersWithoutNulls')->once()->andReturn($args);
 
     return $router;
   }

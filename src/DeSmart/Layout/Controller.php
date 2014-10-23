@@ -110,7 +110,7 @@ class Controller extends LaravelController {
   /**
    * @param \Illuminate\View\Factory $factory
    */
-  public function setViewFactory(\Illuminate\View\Environment $factory) {
+  public function setViewFactory(\Illuminate\View\Factory $factory) {
     $this->viewFactory = $factory;
   }
 
