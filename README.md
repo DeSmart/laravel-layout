@@ -6,7 +6,7 @@ Add `desmart\laravel-layout` as a requirement to composer.json:
 ```json
 {
   "require": {
-    "desmart/laravel-layout": "1.1.*"
+    "desmart/laravel-layout": "1.2.*"
   }
 }
 ```
@@ -115,6 +115,5 @@ Notice, that it takes care with default arguments.
 # Warning
 
 This package is provided *as is*. For now it's only a concept and the whole idea can change. 
-Also there're no unit tests.
 
 Just treat it as early alpha version.
