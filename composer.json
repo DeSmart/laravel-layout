@@ -9,7 +9,7 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "illuminate/support": "4.2.x"
+        "illuminate/support": "5.0.*@dev"
     },
     "autoload": {
         "psr-0": {
@@ -18,10 +18,10 @@
     },
     "minimum-stability": "dev",
     "require-dev": {
-        "illuminate/routing": "4.2.x",
-        "illuminate/container": "4.2.x",
-        "illuminate/view": "4.2.x",
-        "illuminate/http": "4.2.x",
+        "illuminate/routing": "5.0.*@dev",
+        "illuminate/container": "5.0.*@dev",
+        "illuminate/view": "5.0.*@dev",
+        "illuminate/http": "5.0.*@dev",
         "mockery/mockery": "0.8.*"
     }
 }
