@@ -25,11 +25,6 @@ class Controller extends LaravelController {
   protected $layoutDispatcher;
 
   /**
-   * @var \Illuminate\Routing\Router
-   */
-  protected $router;
-
-  /**
    * Array of view data
    *
    * @var array
@@ -53,11 +48,10 @@ class Controller extends LaravelController {
   }
 
   public function execute(array $args = null) {
-    $self = $this;
     $this->layout->setEnvironment($this->viewFactory);
 
     if(null === $args) {
-      $args = $this->router->getCurrentRoute()->parametersWithoutNulls();
+      $args = static::$router->getCurrentRoute()->parametersWithoutNulls();
     }
 
     foreach($this->structure as $block => $callback_list) {
@@ -112,13 +106,6 @@ class Controller extends LaravelController {
    */
   public function setViewFactory(\Illuminate\View\Factory $factory) {
     $this->viewFactory = $factory;
-  }
-
-  /**
-   * @param \Illuminate\Routing\Router
-   */
-  public function setRouter(Router $router) {
-    $this->router = $router;
   }
 
 }
