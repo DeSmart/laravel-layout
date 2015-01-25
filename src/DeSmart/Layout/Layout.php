@@ -4,12 +4,6 @@ use Illuminate\Container\Container;
 
 class Layout {
 
-  private $container;
-
-  public function __construct(Container $container) {
-    $this->container = $container;
-  }
-
   /**
    * Try to dispatch controller
    *
@@ -32,7 +26,8 @@ class Layout {
       $method = 'execute';
     }
 
-    $object = $this->container->make($class);
+    $object = app($class);
+
     $reflection = new \ReflectionObject($object);
     $reflected_method = $reflection->getMethod($method);
 

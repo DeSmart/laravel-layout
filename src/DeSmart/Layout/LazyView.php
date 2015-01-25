@@ -1,7 +1,7 @@
 <?php namespace DeSmart\Layout;
 
 use Illuminate\View\Factory;
-use Illuminate\Support\Contracts\RenderableInterface as Renderable;
+use Illuminate\Contracts\Support\Renderable;
 
 class LazyView implements \ArrayAccess, Renderable {
 
@@ -25,7 +25,11 @@ class LazyView implements \ArrayAccess, Renderable {
     $this->view = $view;
   }
 
-  public function setEnvironment(Factory $environment) {
+  public function setEnvironment(Factory $environment = null) {
+    if ( ! $environment) {
+      $environment = app('Illuminate\Contracts\View\Factory');
+    }
+
     $this->environment = $environment;
   }
 

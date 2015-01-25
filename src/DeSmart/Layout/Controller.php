@@ -1,9 +1,8 @@
 <?php namespace DeSmart\Layout;
 
-use Illuminate\Routing\Router;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Routing\Controller as LaravelController;
-use Illuminate\Support\Contracts\RenderableInterface as Renderable;
+use Illuminate\Contracts\Support\Renderable;
 
 class Controller extends LaravelController {
 
@@ -25,16 +24,13 @@ class Controller extends LaravelController {
   protected $layoutDispatcher;
 
   /**
-   * @var \Illuminate\Routing\Router
-   */
-  protected $router;
-
-  /**
    * Array of view data
    *
    * @var array
    */
   protected $data = array();
+
+  protected $layout;
 
   /**
    * Setup the layout used by the controller.
@@ -42,7 +38,6 @@ class Controller extends LaravelController {
    * @return void
    */
   protected function setupLayout() {
-
     if (null !== $this->layout) {
       $this->changeLayout($this->layout);
     }
@@ -53,11 +48,12 @@ class Controller extends LaravelController {
   }
 
   public function execute(array $args = null) {
-    $self = $this;
+    $this->setupLayout();
+
     $this->layout->setEnvironment($this->viewFactory);
 
     if(null === $args) {
-      $args = $this->router->getCurrentRoute()->parametersWithoutNulls();
+      $args = static::$router->getCurrentRoute()->parametersWithoutNulls();
     }
 
     foreach($this->structure as $block => $callback_list) {
@@ -91,6 +87,10 @@ class Controller extends LaravelController {
   }
 
   public final function callCallback($callbackString, array $args = null) {
+    if ( ! $this->layoutDispatcher) {
+      $this->layoutDispatcher = new Layout();
+    }
+
     $output = $this->layoutDispatcher->dispatch($callbackString, $args);
 
     if(true === $output instanceof Renderable) {
@@ -112,13 +112,6 @@ class Controller extends LaravelController {
    */
   public function setViewFactory(\Illuminate\View\Factory $factory) {
     $this->viewFactory = $factory;
-  }
-
-  /**
-   * @param \Illuminate\Routing\Router
-   */
-  public function setRouter(Router $router) {
-    $this->router = $router;
   }
 
 }
