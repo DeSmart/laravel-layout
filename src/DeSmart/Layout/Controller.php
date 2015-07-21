@@ -4,114 +4,122 @@ use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Routing\Controller as LaravelController;
 use Illuminate\Contracts\Support\Renderable;
 
-class Controller extends LaravelController {
+class Controller extends LaravelController
+{
 
-  /**
-   * Layout structure
-   *
-   * @var array
-   */
-  protected $structure = array();
+    /**
+     * Layout structure
+     *
+     * @var array
+     */
+    protected $structure = array();
 
-  /**
-   * @var \Illuminate\View\Environment
-   */
-  protected $viewFactory;
+    /**
+     * @var \Illuminate\View\Environment
+     */
+    protected $viewFactory;
 
-  /**
-   * @var \DeSmart\Layout\Layout
-   */
-  protected $layoutDispatcher;
+    /**
+     * @var \DeSmart\Layout\Layout
+     */
+    protected $layoutDispatcher;
 
-  /**
-   * Array of view data
-   *
-   * @var array
-   */
-  protected $data = array();
+    /**
+     * Array of view data
+     *
+     * @var array
+     */
+    protected $data = array();
 
-  protected $layout;
+    protected $layout;
+    protected $htmlClass;
 
-  /**
-   * Setup the layout used by the controller.
-   *
-   * @return void
-   */
-  protected function setupLayout() {
-    if (null !== $this->layout) {
-      $this->changeLayout($this->layout);
-    }
-  }
-
-  protected function changeLayout($layout) {
-    $this->layout = new LazyView($layout);
-  }
-
-  public function execute(array $args = null) {
-    $this->setupLayout();
-
-    $this->layout->setEnvironment($this->viewFactory);
-
-    if(null === $args) {
-      $args = static::$router->getCurrentRoute()->parametersWithoutNulls();
+    /**
+     * Setup the layout used by the controller.
+     *
+     * @return void
+     */
+    protected function setupLayout()
+    {
+        if (null !== $this->layout) {
+            $this->changeLayout($this->layout);
+        }
     }
 
-    foreach($this->structure as $block => $callback_list) {
-      $blocks = array();
+    protected function changeLayout($layout)
+    {
+        $this->layout = new LazyView($layout);
+    }
 
-      foreach($callback_list as $callback) {
-        $response = $this->handleResponse($this->callCallback($callback, $args));
+    public function execute(array $args = null)
+    {
+        $this->setupLayout();
+        $this->layout->html_class = $this->htmlClass;
+        $this->layout->setEnvironment($this->viewFactory);
 
-        if(true === $response instanceof Response) {
-          return $response;
+        if (null === $args) {
+            $args = static::$router->getCurrentRoute()->parametersWithoutNulls();
         }
 
-        $blocks[] = $response;
-      }
+        foreach ($this->structure as $block => $callback_list) {
+            $blocks = array();
 
-      $this->layout->with($block, join("\n", $blocks));
+            foreach ($callback_list as $callback) {
+                $response = $this->handleResponse($this->callCallback($callback, $args));
+
+                if (true === $response instanceof Response) {
+                    return $response;
+                }
+
+                $blocks[] = $response;
+            }
+
+            $this->layout->with($block, join("\n", $blocks));
+        }
+
+        $this->layout->with($this->data, $this->htmlClass);
+
+        return $this->layout;
     }
 
-    $this->layout->with($this->data);
+    protected function handleResponse($response)
+    {
 
-    return $this->layout;
-  }
+        if (true === $response instanceof Renderable) {
+            $response = $response->render();
+        }
 
-  protected function handleResponse($response) {
-
-    if(true === $response instanceof Renderable) {
-      $response = $response->render();
+        return $response;
     }
 
-    return $response;
-  }
+    public final function callCallback($callbackString, array $args = null)
+    {
+        if (!$this->layoutDispatcher) {
+            $this->layoutDispatcher = new Layout();
+        }
+        $output = $this->layoutDispatcher->dispatch($callbackString, $args);
 
-  public final function callCallback($callbackString, array $args = null) {
-    if ( ! $this->layoutDispatcher) {
-      $this->layoutDispatcher = new Layout();
+        if (true === $output instanceof Renderable) {
+            $output = $output->render();
+        }
+
+        return $output;
     }
 
-    $output = $this->layoutDispatcher->dispatch($callbackString, $args);
-
-    if(true === $output instanceof Renderable) {
-      $output = $output->render();
+    /**
+     * @param \DeSmart\Layout\Layout $dispatcher
+     */
+    public function setLayoutDispatcher(Layout $dispatcher)
+    {
+        $this->layoutDispatcher = $dispatcher;
     }
 
-    return $output;
-  }
-
-  /**
-   * @param \DeSmart\Layout\Layout $dispatcher
-   */
-  public function setLayoutDispatcher(Layout $dispatcher) {
-    $this->layoutDispatcher = $dispatcher;
-  }
-
-  /**
-   * @param \Illuminate\View\Factory $factory
-   */
-  public function setViewFactory(\Illuminate\View\Factory $factory) {
-    $this->viewFactory = $factory;
-  }
+    /**
+     * @param \Illuminate\View\Factory $factory
+     */
+    public function setViewFactory(\Illuminate\View\Factory $factory)
+    {
+        $this->viewFactory = $factory;
+    }
 
 }

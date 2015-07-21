@@ -2,10 +2,12 @@
 
 use Illuminate\Support\Facades\Facade;
 
-class Layout extends Facade {
+class Layout extends Facade
+{
 
-  protected static function getFacadeAccessor() {
-    return 'layout';
-  }
+    protected static function getFacadeAccessor()
+    {
+        return 'layout';
+    }
 
 }
